@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 
 namespace View.Model.Services
 {
+    /// <summary>
+    /// Класс ContactSerializer отвечает за создание json файла. Для того чтобы пользователь сохранял файл и вытаскивал из него данные 
+    /// </summary>
     public class ContactSerializer
     {
         public string FilePath { get; set; }

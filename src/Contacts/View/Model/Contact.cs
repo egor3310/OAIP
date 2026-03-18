@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace View.Model
 {
+    /// <summary>
+    /// Класс Contact для реализации полей и конструктора
+    /// </summary>
     public class Contact
     {
         public string Name { get; set; }

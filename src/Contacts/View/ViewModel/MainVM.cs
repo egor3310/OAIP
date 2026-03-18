@@ -5,6 +5,9 @@ using View.Model.Services;
 
 namespace View.ViewModel
 {
+    /// <summary>
+    /// Класс MainVM отвечает за всю логику пользовательского интерфейса 
+    /// </summary>
     public class MainVM : INotifyPropertyChanged
     {
         private readonly ContactSerializer _serializer;

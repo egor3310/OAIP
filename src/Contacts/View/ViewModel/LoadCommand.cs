@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace View.ViewModel
 {
+    /// <summary>
+    /// Класс LoadCommand отвечает за кнопку Load. Вытаскивание данных с файла Json на интерфейс. Привязан к кнопке Load
+    /// </summary>
     public class LoadCommand : ICommand
     {
         private readonly MainVM _vm;

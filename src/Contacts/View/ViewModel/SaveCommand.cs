@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace View.ViewModel
 {
+    /// <summary>
+    /// Класс сохраняет файл на компьютере. Привязан к кнопке Save
+    /// </summary>
     public class SaveCommand : ICommand
     {
         private readonly MainVM _vm;
