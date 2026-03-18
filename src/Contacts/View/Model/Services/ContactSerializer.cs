@@ -9,8 +9,14 @@ namespace View.Model.Services
     /// </summary>
     public class ContactSerializer
     {
+        /// <summary>
+        /// Свойство FilePath для хранения файла 
+        /// </summary>
         public string FilePath { get; set; }
 
+        /// <summary>
+        /// констрктор, который создает папку и файл
+        /// </summary>
         public ContactSerializer()
         {
             var docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -18,6 +24,10 @@ namespace View.Model.Services
             FilePath = Path.Combine(dir, "contacts.json");
         }
 
+        /// <summary>
+        /// метод создает файл на компьютере 
+        /// </summary>
+        /// <param name="contact"></param>
         public void Save(Contact contact)
         {
             var dir = Path.GetDirectoryName(FilePath);
@@ -27,7 +37,10 @@ namespace View.Model.Services
             var json = JsonConvert.SerializeObject(contact, Formatting.Indented);
             File.WriteAllText(FilePath, json);
         }
-
+        /// <summary>
+        /// Метод Load отвечает за конвертирование json и переноса данных на интерфейс 
+        /// </summary>
+        /// <returns></returns>
         public Contact? Load()
         {
             if (!File.Exists(FilePath))

@@ -14,8 +14,14 @@ namespace View.ViewModel
 
         private Contact _contact;
 
+        /// <summary>
+        /// Создание event 
+        /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        /// <summary>
+        /// констрктор по умолчанию
+        /// </summary>
         public MainVM()
         {
             _serializer = new ContactSerializer();
@@ -38,6 +44,9 @@ namespace View.ViewModel
             }
         }
 
+        /// <summary>
+        /// Метод для транслирования Name на боковой панели 
+        /// </summary>
         public string Name
         {
             get => Contact.Name;
@@ -49,6 +58,9 @@ namespace View.ViewModel
             }
         }
 
+        /// <summary>
+        /// Метод для транслирования PhoneNumber на боковой панели 
+        /// </summary>
         public string PhoneNumber
         {
             get => Contact.PhoneNumber;
@@ -60,6 +72,9 @@ namespace View.ViewModel
             }
         }
 
+        /// <summary>
+        /// Метод для транслирования Email на боковой панели 
+        /// </summary>
         public string Email
         {
             get => Contact.Email;
