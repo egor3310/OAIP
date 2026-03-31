@@ -1,53 +1,63 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using View.Model;
 
 namespace View.Model.Services
 {
-    /// <summary>
-    /// Класс ContactSerializer отвечает за создание json файла. Для того чтобы пользователь сохранял файл и вытаскивал из него данные 
-    /// </summary>
+/// <summary>
+/// Выполняет сохранение и загрузку коллекции контактов в JSON-файл.
+/// </summary>
     public class ContactSerializer
     {
         /// <summary>
-        /// Свойство FilePath для хранения файла 
+        /// Получает путь к файлу хранения контактов.
         /// </summary>
-        public string FilePath { get; set; }
+        public string FilePath { get; }
 
         /// <summary>
-        /// констрктор, который создает папку и файл
+        /// Инициализирует новый экземпляр класса <see cref="ContactSerializer"/>
+        /// и задаёт путь к файлу хранения контактов.
         /// </summary>
         public ContactSerializer()
         {
-            var docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var dir = Path.Combine(docs, "Contacts");
+            string docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string dir = Path.Combine(docs, "Contacts");
             FilePath = Path.Combine(dir, "contacts.json");
         }
 
         /// <summary>
-        /// метод создает файл на компьютере 
+        /// Сохраняет коллекцию контактов в JSON-файл.
         /// </summary>
-        /// <param name="contact"></param>
-        public void Save(Contact contact)
+        /// <param name="contacts">Коллекция контактов для сохранения.</param>
+        public void Save(List<Contact> contacts)
         {
-            var dir = Path.GetDirectoryName(FilePath);
+            string? dir = Path.GetDirectoryName(FilePath);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+            {
                 Directory.CreateDirectory(dir);
+            }
 
-            var json = JsonConvert.SerializeObject(contact, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(contacts, Formatting.Indented);
             File.WriteAllText(FilePath, json);
         }
+
         /// <summary>
-        /// Метод Load отвечает за конвертирование json и переноса данных на интерфейс 
+        /// Загружает коллекцию контактов из JSON-файла.
         /// </summary>
-        /// <returns></returns>
-        public Contact? Load()
+        /// <returns>Список контактов, загруженных из файла.</returns>
+        public List<Contact> Load()
         {
             if (!File.Exists(FilePath))
-                return null;
+            {
+                return new List<Contact>();
+            }
 
-            var json = File.ReadAllText(FilePath);
-            return JsonConvert.DeserializeObject<Contact>(json);
+            string json = File.ReadAllText(FilePath);
+            List<Contact>? contacts = JsonConvert.DeserializeObject<List<Contact>>(json);
+
+            return contacts ?? new List<Contact>();
         }
     }
 }
