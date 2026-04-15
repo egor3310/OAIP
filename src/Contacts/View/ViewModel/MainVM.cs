@@ -348,7 +348,7 @@ namespace View.ViewModel
         }
 
         /// <summary>
-        /// Происходит при изменении значения свойства.
+        /// Происходит при изменении значения свойства
         /// </summary>
         public event PropertyChangedEventHandler? PropertyChanged;
 

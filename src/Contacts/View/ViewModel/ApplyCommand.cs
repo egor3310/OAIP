@@ -27,6 +27,7 @@ namespace View.ViewModel
         /// <summary>
         /// Команда для применения изменений при создании или редактировании контакта.
         /// </summary>
+        /// 
         public void Execute(object? parameter)
         {
             _vm.Apply();

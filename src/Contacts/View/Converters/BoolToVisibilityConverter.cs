@@ -13,6 +13,7 @@ namespace View.Converters
     {
 
         /// <summary>
+        /// 
         /// Преобразует логическое значение в <see cref="Visibility"/>.
         /// </summary>
         /// <param name="value">Исходное значение.</param>

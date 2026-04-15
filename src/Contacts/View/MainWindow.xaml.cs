@@ -21,6 +21,7 @@ namespace View
         {
             InitializeComponent();
             DataContext = new MainVM();
+
         }
     }
 }

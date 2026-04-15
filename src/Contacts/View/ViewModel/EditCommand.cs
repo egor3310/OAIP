@@ -28,6 +28,7 @@ namespace View.ViewModel
         /// Выполняет переход в режим редактирования контакта.
         /// </summary>
         /// <param name="parameter">Параметр команды.</param>
+        /// 
         public void Execute(object? parameter)
         {
             _vm.Edit();

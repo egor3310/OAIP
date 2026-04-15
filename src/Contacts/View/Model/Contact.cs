@@ -95,6 +95,7 @@ namespace View.Model
 
         /// <summary>
         /// Вызывает событие <see cref="PropertyChanged"/>.
+        /// 
         /// </summary>
         /// <param name="propertyName">Имя изменённого свойства.</param>
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
