@@ -11,7 +11,6 @@ namespace View.Converters
     /// <param name="parameter">Параметр команды.</param>
     public class BoolToVisibilityConverter : IValueConverter
     {
-
         /// <summary>
         /// Преобразует логическое значение в <see cref="Visibility"/>.
         /// </summary>
