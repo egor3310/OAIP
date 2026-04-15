@@ -6,9 +6,9 @@ using View.Model;
 
 namespace View.Model.Services
 {
-/// <summary>
-/// Выполняет сохранение и загрузку коллекции контактов в JSON-файл.
-/// </summary>
+    /// <summary>
+    /// Выполняет сохранение и загрузку коллекции контактов в JSON-файл.
+    /// </summary>
     public class ContactSerializer
     {
         /// <summary>

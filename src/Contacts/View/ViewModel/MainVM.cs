@@ -11,17 +11,6 @@ using View.Model.Services;
 
 namespace View.ViewModel
 {
-
-    /// <summary>
-    /// Определяет режим работы редактора контактов.
-    /// </summary>
-    public enum EditorMode
-    {
-        None,
-        Add,
-        Edit
-    }
-
     /// <summary>
     /// Главная модель представления приложения для работы с коллекцией контактов.
     /// </summary>
@@ -30,7 +19,7 @@ namespace View.ViewModel
         private readonly ContactSerializer _serializer;
 
         private Contact? _selectedContact;
-        private EditorMode _mode;
+        private EnumMode.EditorMode _mode;
 
         private string _editorName;
         private string _editorPhoneNumber;
@@ -56,7 +45,7 @@ namespace View.ViewModel
 
                 // Если в данный момент не редактируем и не создаем,
                 // просто отображаем выбранный контакт справа
-                if (_mode == EditorMode.None)
+                if (_mode == EnumMode.EditorMode.None)
                 {
                     LoadSelectedToEditor();
                 }
@@ -116,27 +105,27 @@ namespace View.ViewModel
         /// <summary>
         /// Определяет, доступны ли поля редактора только для чтения.
         /// </summary>
-        public bool IsReadOnly => _mode == EditorMode.None;
+        public bool IsReadOnly => _mode == EnumMode.EditorMode.None;
 
         /// <summary>
         /// Определяет, доступны ли поля редактора только для чтения.
         /// </summary>
-        public bool IsApplyVisible => _mode != EditorMode.None;
+        public bool IsApplyVisible => _mode != EnumMode.EditorMode.None;
 
         /// <summary>
         /// Определяет, должна ли быть видима кнопка применения изменений.
         /// </summary>
-        public bool CanAdd => _mode == EditorMode.None;
+        public bool CanAdd => _mode == EnumMode.EditorMode.None;
 
         /// <summary>
         /// Определяет, доступна ли команда добавления контакта.
         /// </summary>
-        public bool CanEdit => _mode == EditorMode.None && SelectedContact != null;
+        public bool CanEdit => _mode == EnumMode.EditorMode.None && SelectedContact != null;
 
         /// <summary>
         /// Определяет, доступна ли команда удаления контакта.
         /// </summary>
-        public bool CanRemove => _mode == EditorMode.None && SelectedContact != null;
+        public bool CanRemove => _mode == EnumMode.EditorMode.None && SelectedContact != null;
 
         /// <summary>
         /// Получает команду добавления контакта.
@@ -171,7 +160,7 @@ namespace View.ViewModel
             _editorPhoneNumber = string.Empty;
             _editorEmail = string.Empty;
 
-            _mode = EditorMode.None;
+            _mode = EnumMode.EditorMode.None;
 
             AddCommand = new AddCommand(this);
             EditCommand = new EditCommand(this);
@@ -195,7 +184,7 @@ namespace View.ViewModel
         /// </summary>
         public void Add()
         {
-            _mode = EditorMode.Add;
+            _mode = EnumMode.EditorMode.Add;
             _selectedContact = null;
             OnPropertyChanged(nameof(SelectedContact));
 
@@ -210,7 +199,7 @@ namespace View.ViewModel
         {
             if (SelectedContact == null) return;
 
-            _mode = EditorMode.Edit;
+            _mode = EnumMode.EditorMode.Edit;
             LoadSelectedToEditor();
             RefreshUIState();
         }
@@ -220,20 +209,20 @@ namespace View.ViewModel
         /// </summary>
         public void Apply()
         {
-            if (_mode == EditorMode.Add)
+            if (_mode == EnumMode.EditorMode.Add)
             {
                 Contact newContact = new Contact(EditorName, EditorPhoneNumber, EditorEmail);
                 Contacts.Add(newContact);
                 SelectedContact = newContact;
             }
-            else if (_mode == EditorMode.Edit && SelectedContact != null)
+            else if (_mode == EnumMode.EditorMode.Edit && SelectedContact != null)
             {
                 SelectedContact.Name = EditorName;
                 SelectedContact.PhoneNumber = EditorPhoneNumber;
                 SelectedContact.Email = EditorEmail;
             }
 
-            _mode = EditorMode.None;
+            _mode = EnumMode.EditorMode.None;
             SaveContacts();
 
             if (SelectedContact != null)
@@ -274,7 +263,7 @@ namespace View.ViewModel
                 SelectedContact = Contacts[newIndex];
             }
 
-            _mode = EditorMode.None;
+            _mode = EnumMode.EditorMode.None;
             SaveContacts();
             RefreshUIState();
         }
@@ -284,7 +273,7 @@ namespace View.ViewModel
         /// </summary>
         private void CancelEditingAndShowSelected()
         {
-            _mode = EditorMode.None;
+            _mode = EnumMode.EditorMode.None;
 
             if (SelectedContact != null)
             {
