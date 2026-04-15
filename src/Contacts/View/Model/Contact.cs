@@ -1,41 +1,105 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace View.Model
 {
     /// <summary>
-    /// Класс Contact для реализации полей и конструктора
+    /// Представляет модель контакта с основными данными: именем, телефоном и электронной почтой.
     /// </summary>
-    /// <param name="Name">Имя</param>
-    /// <param name="PhoneNumber">Телеофон</param>
-    /// <param name="Email">Почта</param>
-    public class Contact
+    public class Contact : INotifyPropertyChanged
     {
-        public string Name { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Email { get; set; }
+        private string _name;
+        private string _phoneNumber;
+        private string _email;
 
         /// <summary>
-        /// констрктор по умолчанию класса 
+        /// Получает или задаёт имя контакта.
         /// </summary>
-        public Contact()
+        public string Name
         {
-            Name = string.Empty;
-            PhoneNumber = string.Empty;
-            Email = string.Empty;
+            get => _name;
+            set
+            {
+                if (_name == value) return;
+                _name = value;
+                OnPropertyChanged();
+            }
+        }
+        /// <summary>
+        /// Получает или задаёт имя контакта.
+        /// </summary>
+        public string PhoneNumber
+        {
+            get => _phoneNumber;
+            set
+            {
+                if (_phoneNumber == value) return;
+                _phoneNumber = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
-        /// констрктор с параметрами класса 
+        /// Получает или задаёт адрес электронной почты контакта.
         /// </summary>
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                if (_email == value) return;
+                _email = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Получает или задаёт адрес электронной почты контакта.
+        /// </summary>
+        public Contact()
+        {
+            _name = string.Empty;
+            _phoneNumber = string.Empty;
+            _email = string.Empty;
+        }
+
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="Contact"/> с заданными данными.
+        /// </summary>
+        /// <param name="name">Имя контакта.</param>
+        /// <param name="phoneNumber">Номер телефона контакта.</param>
+        /// <param name="email">Адрес электронной почты контакта.</param>
         public Contact(string name, string phoneNumber, string email)
         {
-            Name = name;
-            PhoneNumber = phoneNumber;
-            Email = email;
+            _name = name;
+            _phoneNumber = phoneNumber;
+            _email = email;
+        }
+
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="Contact"/> с заданными данными.
+        /// </summary>
+        /// <param name="name">Имя контакта.</param>
+        /// <param name="phoneNumber">Номер телефона контакта.</param>
+        /// <param name="email">Адрес электронной почты контакта.</param>
+        public Contact Clone()
+        {
+            return new Contact(Name, PhoneNumber, Email);
+        }
+
+        /// <summary>
+        /// Создаёт копию текущего контакта.
+        /// </summary>
+        /// <returns>Новый объект <see cref="Contact"/> с теми же значениями свойств.</returns>
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        /// <summary>
+        /// Вызывает событие <see cref="PropertyChanged"/>.
+        /// </summary>
+        /// <param name="propertyName">Имя изменённого свойства.</param>
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
