@@ -19,6 +19,7 @@ namespace View.ViewModel
         /// Инициализирует новый экземпляр класса <see cref="AddCommand"/>.
         /// </summary>
         /// <param name="vm">Главная модель представления.</param>
+        /// 
         public AddCommand(MainVM vm)
         {
             _vm = vm;

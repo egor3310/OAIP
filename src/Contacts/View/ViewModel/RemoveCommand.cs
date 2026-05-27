@@ -28,6 +28,7 @@ namespace View.ViewModel
         /// Выполняет удаление выбранного контакта.
         /// </summary>
         /// <param name="parameter">Параметр команды.</param>
+        /// 
         public void Execute(object? parameter)
         {
             _vm.Remove();

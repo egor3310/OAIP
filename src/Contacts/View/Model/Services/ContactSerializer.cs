@@ -14,6 +14,7 @@ namespace View.Model.Services
         /// <summary>
         /// Получает путь к файлу хранения контактов.
         /// </summary>
+        /// 
         public string FilePath { get; }
 
         /// <summary>

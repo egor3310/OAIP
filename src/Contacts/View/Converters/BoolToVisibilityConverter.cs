@@ -12,6 +12,7 @@ namespace View.Converters
     public class BoolToVisibilityConverter : IValueConverter
     {
         /// <summary>
+        /// 
         /// Преобразует логическое значение в <see cref="Visibility"/>.
         /// </summary>
         /// <param name="value">Исходное значение.</param>
