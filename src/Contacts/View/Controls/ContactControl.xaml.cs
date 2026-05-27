@@ -13,6 +13,10 @@ namespace View.Controls
     {
         private const int MaxPhoneDigits = 11;
 
+        private const string phone = @"^[0-9+\-()\s]+$";
+
+        private const string email = @"^[A-Za-z0-9@._\-]+$";
+
         public static readonly DependencyProperty IsEditorReadOnlyProperty =
             DependencyProperty.Register(
                 nameof(IsEditorReadOnly),
@@ -40,7 +44,7 @@ namespace View.Controls
 
             string newText = GetTextAfterInput(textBox, e.Text);
 
-            if (!Regex.IsMatch(e.Text, @"^[0-9+\-()\s]+$"))
+            if (!Regex.IsMatch(e.Text, phone))
             {
                 e.Handled = true;
                 return;
@@ -67,7 +71,7 @@ namespace View.Controls
             string newText =
                 GetTextAfterInput(textBox, pastedText);
 
-            if (!Regex.IsMatch(pastedText, @"^[0-9+\-()\s]+$") ||
+            if (!Regex.IsMatch(pastedText, phone) ||
                 newText.Count(char.IsDigit) > MaxPhoneDigits)
             {
                 e.CancelCommand();
@@ -76,7 +80,7 @@ namespace View.Controls
 
         private void EmailTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            if (!Regex.IsMatch(e.Text, @"^[A-Za-z0-9@._\-]+$"))
+            if (!Regex.IsMatch(e.Text, email))
             {
                 e.Handled = true;
             }
@@ -93,7 +97,7 @@ namespace View.Controls
             string pastedText =
                 (string)e.DataObject.GetData(typeof(string))!;
 
-            if (!Regex.IsMatch(pastedText, @"^[A-Za-z0-9@._\-]+$"))
+            if (!Regex.IsMatch(pastedText, email))
             {
                 e.CancelCommand();
             }
