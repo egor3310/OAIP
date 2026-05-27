@@ -1,29 +1,42 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Xml.Linq;
-using System.Linq;
-using View.Model.Services;
-using View.Model;
-using View.ViewModel;
 using View.Model;
 using View.Model.Services;
 
 namespace View.ViewModel
 {
     /// <summary>
-    /// Главная модель представления приложения для работы с коллекцией контактов.
+    /// Определяет режим работы редактора контактов.
+    /// </summary>
+    public enum EditorMode
+    {
+        /// <summary>
+        /// Режим просмотра без редактирования.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Режим создания нового контакта.
+        /// </summary>
+        Add,
+
+        /// <summary>
+        /// Режим редактирования существующего контакта.
+        /// </summary>
+        Edit
+    }
+
+    /// <summary>
+    /// Главная модель представления приложения.
     /// </summary>
     public class MainVM : INotifyPropertyChanged
     {
         private readonly ContactSerializer _serializer;
 
         private Contact? _selectedContact;
-        private EnumMode.EditorMode _mode;
-
-        private string _editorName;
-        private string _editorPhoneNumber;
-        private string _editorEmail;
+        private Contact? _backupContact;
+        private EditorMode _mode;
 
         /// <summary>
         /// Получает коллекцию контактов.
@@ -40,92 +53,59 @@ namespace View.ViewModel
             {
                 if (_selectedContact == value) return;
 
+                if (_mode == EditorMode.Add)
+                {
+                    if (_selectedContact != null)
+                    {
+                        Contacts.Remove(_selectedContact);
+                    }
+                }
+                else if (_mode == EditorMode.Edit && _selectedContact != null && _backupContact != null)
+                {
+                    _selectedContact.Name = _backupContact.Name;
+                    _selectedContact.PhoneNumber = _backupContact.PhoneNumber;
+                    _selectedContact.Email = _backupContact.Email;
+                }
+
+                _mode = EditorMode.None;
+                _backupContact = null;
+
                 _selectedContact = value;
                 OnPropertyChanged();
-
-                // Если в данный момент не редактируем и не создаем,
-                // просто отображаем выбранный контакт справа
-                if (_mode == EnumMode.EditorMode.None)
-                {
-                    LoadSelectedToEditor();
-                }
-                else
-                {
-                    // Если во время Add/Edit выбрали другой контакт,
-                    // то несохраненные изменения отменяются
-                    CancelEditingAndShowSelected();
-                }
 
                 RefreshUIState();
             }
         }
 
         /// <summary>
-        /// Получает или задаёт имя, отображаемое в редакторе контакта.
+        /// Определяет, доступны ли поля только для чтения.
         /// </summary>
-        public string EditorName
-        {
-            get => _editorName;
-            set
-            {
-                if (_editorName == value) return;
-                _editorName = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool IsReadOnly => _mode == EditorMode.None;
 
         /// <summary>
-        /// Получает или задаёт номер телефона, отображаемый в редакторе контакта.
+        /// Определяет, должна ли отображаться кнопка Apply.
         /// </summary>
-        public string EditorPhoneNumber
-        {
-            get => _editorPhoneNumber;
-            set
-            {
-                if (_editorPhoneNumber == value) return;
-                _editorPhoneNumber = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool IsApplyVisible => _mode != EditorMode.None;
 
         /// <summary>
-        /// Получает или задаёт адрес электронной почты, отображаемый в редакторе контакта.
+        /// Определяет, доступна ли команда добавления.
         /// </summary>
-        public string EditorEmail
-        {
-            get => _editorEmail;
-            set
-            {
-                if (_editorEmail == value) return;
-                _editorEmail = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool CanAdd => _mode == EditorMode.None;
 
         /// <summary>
-        /// Определяет, доступны ли поля редактора только для чтения.
+        /// Определяет, доступна ли команда редактирования.
         /// </summary>
-        public bool IsReadOnly => _mode == EnumMode.EditorMode.None;
+        public bool CanEdit => _mode == EditorMode.None && SelectedContact != null;
 
         /// <summary>
-        /// Определяет, доступны ли поля редактора только для чтения.
+        /// Определяет, доступна ли команда удаления.
         /// </summary>
-        public bool IsApplyVisible => _mode != EnumMode.EditorMode.None;
+        public bool CanRemove => _mode == EditorMode.None && SelectedContact != null;
 
         /// <summary>
-        /// Определяет, должна ли быть видима кнопка применения изменений.
+        /// Определяет, доступна ли команда применения изменений.
         /// </summary>
-        public bool CanAdd => _mode == EnumMode.EditorMode.None;
-
-        /// <summary>
-        /// Определяет, доступна ли команда добавления контакта.
-        /// </summary>
-        public bool CanEdit => _mode == EnumMode.EditorMode.None && SelectedContact != null;
-
-        /// <summary>
-        /// Определяет, доступна ли команда удаления контакта.
-        /// </summary>
-        public bool CanRemove => _mode == EnumMode.EditorMode.None && SelectedContact != null;
+        public bool CanApply => _mode != EditorMode.None && SelectedContact != null && !SelectedContact.HasErrors;
 
         /// <summary>
         /// Получает команду добавления контакта.
@@ -153,14 +133,9 @@ namespace View.ViewModel
         public MainVM()
         {
             _serializer = new ContactSerializer();
-
             Contacts = new ObservableCollection<Contact>(_serializer.Load());
 
-            _editorName = string.Empty;
-            _editorPhoneNumber = string.Empty;
-            _editorEmail = string.Empty;
-
-            _mode = EnumMode.EditorMode.None;
+            _mode = EditorMode.None;
 
             AddCommand = new AddCommand(this);
             EditCommand = new EditCommand(this);
@@ -169,13 +144,10 @@ namespace View.ViewModel
 
             if (Contacts.Count > 0)
             {
-                SelectedContact = Contacts[0];
-            }
-            else
-            {
-                ClearEditorFields();
+                _selectedContact = Contacts[0];
             }
 
+            SubscribeToContacts();
             RefreshUIState();
         }
 
@@ -184,11 +156,12 @@ namespace View.ViewModel
         /// </summary>
         public void Add()
         {
-            _mode = EnumMode.EditorMode.Add;
-            _selectedContact = null;
-            OnPropertyChanged(nameof(SelectedContact));
+            Contact newContact = new Contact();
+            Contacts.Add(newContact);
+            SelectedContact = newContact;
+            _mode = EditorMode.Add;
 
-            ClearEditorFields();
+            SubscribeToSelectedContact();
             RefreshUIState();
         }
 
@@ -199,8 +172,10 @@ namespace View.ViewModel
         {
             if (SelectedContact == null) return;
 
-            _mode = EnumMode.EditorMode.Edit;
-            LoadSelectedToEditor();
+            _backupContact = SelectedContact.Clone();
+            _mode = EditorMode.Edit;
+
+            SubscribeToSelectedContact();
             RefreshUIState();
         }
 
@@ -209,31 +184,15 @@ namespace View.ViewModel
         /// </summary>
         public void Apply()
         {
-            if (_mode == EnumMode.EditorMode.Add)
+            if (SelectedContact == null || SelectedContact.HasErrors)
             {
-                Contact newContact = new Contact(EditorName, EditorPhoneNumber, EditorEmail);
-                Contacts.Add(newContact);
-                SelectedContact = newContact;
-            }
-            else if (_mode == EnumMode.EditorMode.Edit && SelectedContact != null)
-            {
-                SelectedContact.Name = EditorName;
-                SelectedContact.PhoneNumber = EditorPhoneNumber;
-                SelectedContact.Email = EditorEmail;
+                return;
             }
 
-            _mode = EnumMode.EditorMode.None;
+            _mode = EditorMode.None;
+            _backupContact = null;
+
             SaveContacts();
-
-            if (SelectedContact != null)
-            {
-                LoadSelectedToEditor();
-            }
-            else
-            {
-                ClearEditorFields();
-            }
-
             RefreshUIState();
         }
 
@@ -245,12 +204,14 @@ namespace View.ViewModel
             if (SelectedContact == null) return;
 
             int removedIndex = Contacts.IndexOf(SelectedContact);
-            Contacts.Remove(SelectedContact);
+            Contact removedContact = SelectedContact;
+
+            Contacts.Remove(removedContact);
 
             if (Contacts.Count == 0)
             {
-                SelectedContact = null;
-                ClearEditorFields();
+                _selectedContact = null;
+                OnPropertyChanged(nameof(SelectedContact));
             }
             else
             {
@@ -260,63 +221,52 @@ namespace View.ViewModel
                     newIndex = Contacts.Count - 1;
                 }
 
-                SelectedContact = Contacts[newIndex];
+                _selectedContact = Contacts[newIndex];
+                OnPropertyChanged(nameof(SelectedContact));
             }
 
-            _mode = EnumMode.EditorMode.None;
             SaveContacts();
             RefreshUIState();
         }
 
         /// <summary>
-        /// Отменяет редактирование и отображает данные выбранного контакта.
-        /// </summary>
-        private void CancelEditingAndShowSelected()
-        {
-            _mode = EnumMode.EditorMode.None;
-
-            if (SelectedContact != null)
-            {
-                LoadSelectedToEditor();
-            }
-            else
-            {
-                ClearEditorFields();
-            }
-        }
-
-        /// <summary>
-        /// Загружает данные выбранного контакта в поля редактора.
-        /// </summary>
-        private void LoadSelectedToEditor()
-        {
-            if (SelectedContact == null)
-            {
-                ClearEditorFields();
-                return;
-            }
-
-            EditorName = SelectedContact.Name;
-            EditorPhoneNumber = SelectedContact.PhoneNumber;
-            EditorEmail = SelectedContact.Email;
-        }
-
-        /// <summary>
-        /// Очищает поля редактора контакта.
-        /// </summary>
-        private void ClearEditorFields()
-        {
-            EditorName = string.Empty;
-            EditorPhoneNumber = string.Empty;
-            EditorEmail = string.Empty;
-        }
-
-        /// <summary>
-        /// Очищает поля редактора контакта.
+        /// Сохраняет коллекцию контактов в файл.
         /// </summary>
         private void SaveContacts()
         {
             _serializer.Save(Contacts.ToList());
+        }
+
+        /// <summary>
+        /// Подписывает существующие контакты на отслеживание изменений ошибок.
+        /// </summary>
+        private void SubscribeToContacts()
+        {
+            foreach (var contact in Contacts)
+            {
+                contact.ErrorsChanged -= Contact_ErrorsChanged;
+                contact.ErrorsChanged += Contact_ErrorsChanged;
+            }
+        }
+
+        /// <summary>
+        /// Подписывает выбранный контакт на отслеживание изменений ошибок.
+        /// </summary>
+        private void SubscribeToSelectedContact()
+        {
+            if (SelectedContact == null) return;
+
+            SelectedContact.ErrorsChanged -= Contact_ErrorsChanged;
+            SelectedContact.ErrorsChanged += Contact_ErrorsChanged;
+        }
+
+        /// <summary>
+        /// Обрабатывает изменение ошибок валидации у контакта.
+        /// </summary>
+        private void Contact_ErrorsChanged(object? sender, DataErrorsChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(CanApply));
+            ApplyCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
@@ -329,6 +279,7 @@ namespace View.ViewModel
             OnPropertyChanged(nameof(CanAdd));
             OnPropertyChanged(nameof(CanEdit));
             OnPropertyChanged(nameof(CanRemove));
+            OnPropertyChanged(nameof(CanApply));
 
             AddCommand.RaiseCanExecuteChanged();
             EditCommand.RaiseCanExecuteChanged();
@@ -342,7 +293,7 @@ namespace View.ViewModel
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
-        /// Вызывает событие <see cref="PropertyChanged"/>.
+        /// Вызывает событие изменения свойства.
         /// </summary>
         /// <param name="propertyName">Имя изменённого свойства.</param>
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
