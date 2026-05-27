@@ -7,14 +7,16 @@
         Width="900"
         MinHeight="350"
         MinWidth="700">
+
     <Window.Resources>
         <DataTemplate x:Key="ContactTemplate">
             <StackPanel Margin="3">
                 <TextBlock FontSize="12"
-                           FontWeight="SemiBold"
-                           Text="{Binding Name}" />
+                   FontWeight="SemiBold"
+                   Text="{Binding Name}" />
+
                 <TextBlock FontSize="10"
-                           Text="{Binding PhoneNumber}" />
+                   Text="{Binding PhoneNumber}" />
             </StackPanel>
         </DataTemplate>
     </Window.Resources>
@@ -26,7 +28,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Левая колонка -->
+        <!-- Левая панель -->
         <Border Grid.Column="0" Background="#F8F8F8">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
@@ -41,10 +43,10 @@
                          Text="Find:"/>
 
                 <ListBox Grid.Row="1"
-                         Margin="3"
-                         ItemsSource="{Binding Contacts}"
-                         SelectedItem="{Binding SelectedContact, Mode=TwoWay}"
-                         ItemTemplate="{StaticResource ContactTemplate}" />
+         Margin="3"
+         ItemsSource="{Binding Contacts}"
+         SelectedItem="{Binding SelectedContact, Mode=TwoWay}"
+         ItemTemplate="{StaticResource ContactTemplate}" />
 
                 <Grid Grid.Row="2" Margin="3">
                     <Grid.ColumnDefinitions>
@@ -57,19 +59,19 @@
                             Margin="3"
                             Height="25"
                             Content="Add"
-                            Command="{Binding AddCommand}"/>
+                            Command="{Binding AddCommand}" />
 
                     <Button Grid.Column="1"
                             Margin="3"
                             Height="25"
                             Content="Edit"
-                            Command="{Binding EditCommand}"/>
+                            Command="{Binding EditCommand}" />
 
                     <Button Grid.Column="2"
                             Margin="3"
                             Height="25"
                             Content="Remove"
-                            Command="{Binding RemoveCommand}"/>
+                            Command="{Binding RemoveCommand}" />
                 </Grid>
             </Grid>
         </Border>
@@ -81,7 +83,7 @@
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"/>
 
-        <!-- Правая колонка -->
+        <!-- Правая панель -->
         <Border Grid.Column="2" Background="White">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
@@ -91,7 +93,9 @@
                 </Grid.RowDefinitions>
 
                 <controls:ContactControl Grid.Row="0"
-                         DataContext="{Binding SelectedContact}" />
+                         DataContext="{Binding EditingContact}"
+                         IsEditorReadOnly="{Binding DataContext.IsReadOnly,
+                                                    RelativeSource={RelativeSource AncestorType=Window}}" />
 
                 <Button Grid.Row="1"
                         Margin="3"
@@ -100,7 +104,8 @@
                         HorizontalAlignment="Left"
                         Content="Apply"
                         Command="{Binding ApplyCommand}"
-                        Visibility="{Binding IsApplyVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        Visibility="{Binding IsApplyVisible,
+                                             Converter={StaticResource BoolToVisibilityConverter}}" />
             </Grid>
         </Border>
     </Grid>

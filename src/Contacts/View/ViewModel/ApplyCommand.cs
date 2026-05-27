@@ -31,7 +31,7 @@ namespace View.ViewModel
         /// <returns><see langword="true"/>, если команда доступна; иначе <see langword="false"/>.</returns>
         public bool CanExecute(object? parameter)
         {
-            return _vm.CanApply;
+            return _vm.IsApplyVisible;
         }
 
         /// <summary>

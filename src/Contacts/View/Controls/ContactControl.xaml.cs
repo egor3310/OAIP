@@ -12,20 +12,25 @@ namespace View.Controls
     public partial class ContactControl : UserControl
     {
         private const int MaxPhoneDigits = 11;
-        private const int MinPhoneDigits = 10;
 
+        public static readonly DependencyProperty IsEditorReadOnlyProperty =
+            DependencyProperty.Register(
+                nameof(IsEditorReadOnly),
+                typeof(bool),
+                typeof(ContactControl),
+                new PropertyMetadata(true));
 
-        /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ContactControl"/>.
-        /// </summary>
+        public bool IsEditorReadOnly
+        {
+            get => (bool)GetValue(IsEditorReadOnlyProperty);
+            set => SetValue(IsEditorReadOnlyProperty, value);
+        }
+
         public ContactControl()
         {
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Предварительно фильтрует ввод в поле номера телефона.
-        /// </summary>
         private void PhoneTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             if (sender is not TextBox textBox)
@@ -41,49 +46,34 @@ namespace View.Controls
                 return;
             }
 
-            int digitCount = newText.Count(char.IsDigit);
-            if (digitCount > MaxPhoneDigits)
+            if (newText.Count(char.IsDigit) > MaxPhoneDigits)
             {
                 e.Handled = true;
             }
         }
 
-        /// <summary>
-        /// Блокирует вставку недопустимых символов в поле номера телефона.
-        /// </summary>
         private void PhoneTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
-            if (sender is not TextBox textBox)
+            if (sender is not TextBox textBox ||
+                !e.DataObject.GetDataPresent(typeof(string)))
             {
                 e.CancelCommand();
                 return;
             }
 
-            if (!e.DataObject.GetDataPresent(typeof(string)))
-            {
-                e.CancelCommand();
-                return;
-            }
+            string pastedText =
+                (string)e.DataObject.GetData(typeof(string))!;
 
-            string pastedText = (string)e.DataObject.GetData(typeof(string))!;
-            string newText = GetTextAfterInput(textBox, pastedText);
+            string newText =
+                GetTextAfterInput(textBox, pastedText);
 
-            if (!Regex.IsMatch(pastedText, @"^[0-9+\-()\s]+$"))
-            {
-                e.CancelCommand();
-                return;
-            }
-
-            int digitCount = newText.Count(char.IsDigit);
-            if (digitCount > MaxPhoneDigits)
+            if (!Regex.IsMatch(pastedText, @"^[0-9+\-()\s]+$") ||
+                newText.Count(char.IsDigit) > MaxPhoneDigits)
             {
                 e.CancelCommand();
             }
         }
 
-        /// <summary>
-        /// Предварительно фильтрует ввод в поле электронной почты.
-        /// </summary>
         private void EmailTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             if (!Regex.IsMatch(e.Text, @"^[A-Za-z0-9@._\-]+$"))
@@ -92,9 +82,6 @@ namespace View.Controls
             }
         }
 
-        /// <summary>
-        /// Блокирует вставку недопустимых символов в поле электронной почты.
-        /// </summary>
         private void EmailTextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
             if (!e.DataObject.GetDataPresent(typeof(string)))
@@ -103,7 +90,8 @@ namespace View.Controls
                 return;
             }
 
-            string pastedText = (string)e.DataObject.GetData(typeof(string))!;
+            string pastedText =
+                (string)e.DataObject.GetData(typeof(string))!;
 
             if (!Regex.IsMatch(pastedText, @"^[A-Za-z0-9@._\-]+$"))
             {
@@ -111,19 +99,20 @@ namespace View.Controls
             }
         }
 
-        /// <summary>
-        /// Возвращает текст, который получится после ввода или вставки.
-        /// </summary>
         private static string GetTextAfterInput(TextBox textBox, string input)
         {
             string currentText = textBox.Text ?? string.Empty;
 
             if (textBox.SelectionLength > 0)
             {
-                currentText = currentText.Remove(textBox.SelectionStart, textBox.SelectionLength);
+                currentText = currentText.Remove(
+                    textBox.SelectionStart,
+                    textBox.SelectionLength);
             }
 
-            return currentText.Insert(textBox.CaretIndex, input);
+            return currentText.Insert(
+                textBox.CaretIndex,
+                input);
         }
     }
 }
