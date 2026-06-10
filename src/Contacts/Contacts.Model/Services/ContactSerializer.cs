@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
-using View.Model;
+﻿using Newtonsoft.Json;
 
-namespace View.Model.Services
+namespace Contacts.Model.Services
 {
     /// <summary>
     /// Выполняет сохранение и загрузку коллекции контактов в JSON-файл.
@@ -17,8 +13,7 @@ namespace View.Model.Services
         public string FilePath { get; }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ContactSerializer"/>
-        /// и задаёт путь к файлу хранения контактов.
+        /// Инициализирует новый экземпляр класса <see cref="ContactSerializer"/>.
         /// </summary>
         public ContactSerializer()
         {
@@ -30,10 +25,10 @@ namespace View.Model.Services
         /// <summary>
         /// Сохраняет коллекцию контактов в JSON-файл.
         /// </summary>
-        /// <param name="contacts">Коллекция контактов для сохранения.</param>
         public void Save(List<Contact> contacts)
         {
             string? dir = Path.GetDirectoryName(FilePath);
+
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
@@ -46,7 +41,6 @@ namespace View.Model.Services
         /// <summary>
         /// Загружает коллекцию контактов из JSON-файла.
         /// </summary>
-        /// <returns>Список контактов, загруженных из файла.</returns>
         public List<Contact> Load()
         {
             if (!File.Exists(FilePath))
@@ -55,8 +49,13 @@ namespace View.Model.Services
             }
 
             string json = File.ReadAllText(FilePath);
-            List<Contact>? contacts = JsonConvert.DeserializeObject<List<Contact>>(json);
 
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return new List<Contact>();
+            }
+
+            List<Contact>? contacts = JsonConvert.DeserializeObject<List<Contact>>(json);
             return contacts ?? new List<Contact>();
         }
     }
