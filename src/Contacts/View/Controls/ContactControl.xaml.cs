@@ -13,9 +13,6 @@ namespace View.Controls
     {
         private const int MaxPhoneDigits = 11;
 
-        /// <summary>
-        /// Свойство зависимости, определяющее режим только для чтения.
-        /// </summary>
         public static readonly DependencyProperty IsEditorReadOnlyProperty =
             DependencyProperty.Register(
                 nameof(IsEditorReadOnly),
@@ -49,7 +46,6 @@ namespace View.Controls
 
             string newText = GetTextAfterInput(textBox, e.Text);
 
-            if (!Regex.IsMatch(e.Text, @"^[0-9+\-()\s]+$"))
             {
                 e.Handled = true;
                 return;
@@ -70,10 +66,7 @@ namespace View.Controls
                 return;
             }
 
-            string pastedText = (string)e.DataObject.GetData(typeof(string))!;
-            string newText = GetTextAfterInput(textBox, pastedText);
 
-            if (!Regex.IsMatch(pastedText, @"^[0-9+\-()\s]+$") ||
                 newText.Count(char.IsDigit) > MaxPhoneDigits)
             {
                 e.CancelCommand();
@@ -82,7 +75,6 @@ namespace View.Controls
 
         private void EmailTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            if (!Regex.IsMatch(e.Text, @"^[A-Za-z0-9@._\-]+$"))
             {
                 e.Handled = true;
             }
@@ -96,9 +88,7 @@ namespace View.Controls
                 return;
             }
 
-            string pastedText = (string)e.DataObject.GetData(typeof(string))!;
 
-            if (!Regex.IsMatch(pastedText, @"^[A-Za-z0-9@._\-]+$"))
             {
                 e.CancelCommand();
             }
@@ -115,7 +105,6 @@ namespace View.Controls
                     textBox.SelectionLength);
             }
 
-            return currentText.Insert(textBox.CaretIndex, input);
         }
     }
 }
