@@ -44,37 +44,37 @@ namespace Contacts.ViewModel
         [NotifyCanExecuteChangedFor(nameof(EditCommand))]
         [NotifyCanExecuteChangedFor(nameof(RemoveCommand))]
         [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
-        private Status mode;
+        private EditorMode mode;
 
         /// <summary>
         /// Определяет, доступны ли поля только для чтения.
         /// </summary>
-        public bool IsReadOnly => Mode == Status.EditorMode.None;
+        public bool IsReadOnly => Mode == EditorMode.None;
 
         /// <summary>
         /// Определяет, должна ли отображаться кнопка Apply.
         /// </summary>
-        public bool IsApplyVisible => Mode != Status.EditorMode.None;
+        public bool IsApplyVisible => Mode != EditorMode.None;
 
         /// <summary>
         /// Определяет, доступна ли команда добавления.
         /// </summary>
-        public bool CanAdd => Mode == Status.EditorMode.None;
+        public bool CanAdd => Mode == EditorMode.None;
 
         /// <summary>
         /// Определяет, доступна ли команда редактирования.
         /// </summary>
-        public bool CanEdit => Mode == Status.EditorMode.None && SelectedContact != null;
+        public bool CanEdit => Mode == EditorMode.None && SelectedContact != null;
 
         /// <summary>
         /// Определяет, доступна ли команда удаления.
         /// </summary>
-        public bool CanRemove => Mode == Status.EditorMode.None && SelectedContact != null;
+        public bool CanRemove => Mode == EditorMode.None && SelectedContact != null;
 
         /// <summary>
         /// Определяет, доступна ли команда применения изменений.
         /// </summary>
-        public bool CanApply => Mode != Status.EditorMode.None &&
+        public bool CanApply => Mode != EditorMode.None &&
                                 EditingContact != null &&
                                 !EditingContact.HasErrors;
 
@@ -86,7 +86,7 @@ namespace Contacts.ViewModel
             _serializer = new ContactSerializer();
             Contacts = new ObservableCollection<Contact>(_serializer.Load());
 
-            Mode = Status.EditorMode.None;
+            Mode = EditorMode.None;
 
             if (Contacts.Count > 0)
             {
@@ -97,9 +97,9 @@ namespace Contacts.ViewModel
 
         partial void OnSelectedContactChanged(Contact? value)
         {
-            if (Mode != Status.EditorMode.None)
+            if (Mode != EditorMode.None)
             {
-                Mode = Status.EditorMode.None;
+                Mode = EditorMode.None;
             }
 
             EditingContact = value?.Clone();
@@ -129,7 +129,7 @@ namespace Contacts.ViewModel
         {
             SelectedContact = null;
             EditingContact = new Contact();
-            Mode = Status.EditorMode.Add;
+            Mode = EditorMode.Add;
         }
 
         private bool CanExecuteAdd()
@@ -142,7 +142,7 @@ namespace Contacts.ViewModel
         {
             if (SelectedContact == null) return;
 
-            Mode = Status.EditorMode.Edit;
+            Mode = EditorMode.Edit;
             EditingContact = SelectedContact.Clone();
         }
 
@@ -192,22 +192,22 @@ namespace Contacts.ViewModel
                 return;
             }
 
-            if (Mode == Status.EditorMode.Add)
+            if (Mode == EditorMode.Add)
             {
                 Contact newContact = EditingContact.Clone();
                 Contacts.Add(newContact);
 
-                Mode = Status.EditorMode.None;
+                Mode = EditorMode.None;
                 SelectedContact = newContact;
                 EditingContact = newContact.Clone();
             }
-            else if (Mode == Status.EditorMode.Edit && SelectedContact != null)
+            else if (Mode == EditorMode.Edit && SelectedContact != null)
             {
                 SelectedContact.Name = EditingContact.Name;
                 SelectedContact.PhoneNumber = EditingContact.PhoneNumber;
                 SelectedContact.Email = EditingContact.Email;
 
-                Mode = Status.EditorMode.None;
+                Mode = EditorMode.None;
                 EditingContact = SelectedContact.Clone();
             }
 

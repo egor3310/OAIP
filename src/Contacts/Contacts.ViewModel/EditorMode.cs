@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace Contacts.ViewModel
 {
-    internal class Status
-    {
         /// <summary>
         /// Определяет режим работы редактора контактов.
         /// </summary>
@@ -28,5 +26,4 @@ namespace Contacts.ViewModel
             /// </summary>
             Edit
         }
-    }
 }
