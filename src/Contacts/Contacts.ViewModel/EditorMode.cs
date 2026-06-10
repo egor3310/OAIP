@@ -4,19 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace View.ViewModel
+namespace Contacts.ViewModel
 {
-    internal class EnumMode
-    {
         /// <summary>
         /// Определяет режим работы редактора контактов.
         /// </summary>
         public enum EditorMode
         {
+            /// <summary>
+            /// Режим просмотра.
+            /// </summary>
             None,
+
+            /// <summary>
+            /// Режим добавления.
+            /// </summary>
             Add,
+
+            /// <summary>
+            /// Режим редактирования.
+            /// </summary>
             Edit
         }
-
-    }
 }
